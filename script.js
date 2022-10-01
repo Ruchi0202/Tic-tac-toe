@@ -1,93 +1,120 @@
-const X_CLASS = 'x'
-const CIRCLE_CLASS = 'circle'
-const WINNING_COMBINATIONS = [
-  [0, 1, 2],
-  [3, 4, 5],
-  [6, 7, 8],
-  [0, 3, 6],
-  [1, 4, 7],
-  [2, 5, 8],
-  [0, 4, 8],
-  [2, 4, 6]
-]
-const cellElements = document.querySelectorAll('[data-cell]')
-const board = document.getElementById('board')
-const winningMessageElement = document.getElementById('winningMessage')
-const restartButton = document.getElementById('restartButton')
-const winningMessageTextElement = document.querySelector('[data-winning-message-text]')
-let circleTurn
-
-startGame()
-
-restartButton.addEventListener('click', startGame)
-
-function startGame() {
-  circleTurn = false
-  cellElements.forEach(cell => {
-    cell.classList.remove(X_CLASS)
-    cell.classList.remove(CIRCLE_CLASS)
-    cell.removeEventListener('click', handleClick)
-    cell.addEventListener('click', handleClick, { once: true })
-  })
-  setBoardHoverClass()
-  winningMessageElement.classList.remove('show')
-}
-
-function handleClick(e) {
-  const cell = e.target
-  const currentClass = circleTurn ? CIRCLE_CLASS : X_CLASS
-  placeMark(cell, currentClass)
-  if (checkWin(currentClass)) {
-    endGame(false)
-  } else if (isDraw()) {
-    endGame(true)
-  } else {
-    swapTurns()
-    setBoardHoverClass()
+$(document).ready(function(){
+  var turns = ["#","#","#","#","#","#","+","#"];
+  var computerTurn = "";
+  var turn = "";
+  var gameOn = false;
+  var count = 0;
+  
+  var startTurn = prompt("Choose Your Move", "Type X or O").toUpperCase();
+  switch (startTurn) {
+      case "X":
+          computerTurn = "O";
+          turn = "X";
+          $("#message").html("Player " + turn + " gets to start!");
+          break;
+      case "O":
+          computerTurn = "X";
+          turn = "O";
+          $("#message").html("Player " + turn + " gets to start!");
+          break;
+      case null:
+          alert("Sorry. Please type X or O");
+          window.location.reload(true);
+      break;
+      default:
+          alert("Sorry. Please type X or O");
+          window.location.reload(true);
+          break;
   }
-}
-
-function endGame(draw) {
-  if (draw) {
-    winningMessageTextElement.innerText = 'Draw!'
-  } else {
-    winningMessageTextElement.innerText = `${circleTurn ? "O's" : "X's"} Wins!`
+  
+  function computersTurn() {
+      var taken = false;
+      while (taken === false && count !== 5) {
+          var computerMove = (Math.random() * 10).toFixed();
+          var move = $("#" + computerMove).text();
+          if (move === "#") {
+              $("#" + computerMove).text(computerTurn);
+              taken = true;
+              turns[computerMove] = computerTurn;
+          }
+      }
   }
-  winningMessageElement.classList.add('show')
-}
-
-function isDraw() {
-  return [...cellElements].every(cell => {
-    return cell.classList.contains(X_CLASS) || cell.classList.contains(CIRCLE_CLASS)
-  })
-}
-
-function placeMark(cell, currentClass) {
-  cell.classList.add(currentClass)
-}
-
-function swapTurns() {
-  circleTurn = !circleTurn
-}
-
-function setBoardHoverClass() {
-  board.classList.remove(X_CLASS)
-  board.classList.remove(CIRCLE_CLASS)
-  if (circleTurn) {
-    board.classList.add(CIRCLE_CLASS)
-  } else {
-    board.classList.add(X_CLASS)
+  
+  function playerTurn (turn, id){
+    var spotTaken = $("#"+id).text();
+    if (spotTaken ==="#"){
+      count++;
+      turns[id] = turn;
+      $("#"+id).text(turn);
+      winCondition(turns,turn);
+      if (gameOn === false){
+        computersTurn();
+        $("#message").html("It's " + turn +"'s turn.");
+        winCondition(turns, computerTurn);
+      }
+    }
   }
-}
-
-function checkWin(currentClass) {
-  return WINNING_COMBINATIONS.some(combination => {
-    return combination.every(index => {
-      return cellElements[index].classList.contains(currentClass)
-    })
-  })
-}
-
-
-
-
+  
+  function winCondition(trackMoves, currentMove) {
+      if (trackMoves[0] === currentMove && trackMoves[1] === currentMove && trackMoves[2] === currentMove) {
+          gameOn = true;
+          reset();
+          alert("Player " + currentMove + " wins!");
+      } else if (trackMoves[2] === currentMove && trackMoves[4] === currentMove && trackMoves[6] === currentMove) {
+          gameOn = true;
+          reset();
+          alert("Player " + currentMove + " wins!");
+      } else if (trackMoves[0] === currentMove && trackMoves[3] === currentMove && trackMoves[6] === currentMove) {
+          gameOn = true;
+          reset();
+          alert("Player " + currentMove + " wins!");
+      } else if (trackMoves[0] === currentMove && trackMoves[4] === currentMove && trackMoves[8] === currentMove) {
+          gameOn = true;
+          reset();
+          alert("Player " + currentMove + " wins!");
+      } else if (trackMoves[1] === currentMove && trackMoves[4] === currentMove && trackMoves[7] === currentMove) {
+          gameOn = true;
+          reset();
+          alert("Player " + currentMove + " wins!");
+      } else if (trackMoves[2] === currentMove && trackMoves[5] === currentMove && trackMoves[8] === currentMove) {
+          gameOn = true;
+          reset();
+          alert("Player " + currentMove + " wins!");
+      } else if (trackMoves[2] === currentMove && trackMoves[5] === currentMove && trackMoves[8] === currentMove) {
+          gameOn = true;
+          reset();
+          alert("Player " + currentMove + " wins!");
+      } else if (trackMoves[3] === currentMove && trackMoves[4] === currentMove && trackMoves[5] === currentMove) {
+          gameOn = true;
+          reset();
+          alert("Player " + currentMove + " wins!");
+      } else if (trackMoves[6] === currentMove && trackMoves[7] === currentMove && trackMoves[8] === currentMove) {
+          gameOn = true;
+          reset();
+          alert("Player " + currentMove + " wins!");
+      } else if(!(trackMoves.includes("#"))){
+         gameOn = true;
+        reset();
+        alert("It is a Draw!");
+      }﻿ else {
+          gameOn = false;
+      }
+  }
+  
+  $(".tic").click(function(){
+    var slot = $(this).attr('id');
+    playerTurn(turn,slot);
+  });
+  
+  function reset(){
+    turns = ["#","#","#","#","#","#","+","#"];
+    count = 0;
+    $(".tic").text("#");
+    gameOn = true;
+  }
+  
+  $("#reset").click(function(){
+    reset();
+  });
+  
+  });
